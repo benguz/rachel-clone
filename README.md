@@ -76,12 +76,32 @@ happening — it only confirms a matching `@font-face` rule exists, not that the
 actually detect it, measure text width in `acumin-pro` and compare against `serif`; if they are
 equal, the font did not load.
 
-The fonts are **deliberately not self-hosted** — extracting Adobe Fonts files and serving them
-from a public repo would violate the licence. Real fixes, in order of preference:
+The Acumin files are **deliberately not self-hosted** — extracting Adobe Fonts and serving them
+from a public repo would violate the licence.
 
-1. Add the deploy domain to the kit's allowed domains in Rachel's Adobe Fonts account.
-2. Deploy to a custom domain already licensed on the kit.
-3. Accept the serif fallback on the public preview (localhost stays accurate).
+**What is in place instead.** Every `acumin-pro` declaration now carries a fallback chain:
+
+```css
+font-family: "acumin-pro", "Archivo", sans-serif;
+```
+
+| Where | Renders as |
+|---|---|
+| localhost, or a domain on Rachel's Adobe kit | **Acumin Pro** — real, unchanged |
+| GitHub Pages, or anywhere unlicensed | **Archivo** — self-hosted, close neo-grotesque |
+| Neither available | generic sans — never serif |
+
+[Archivo](https://github.com/Omnibus-Type/Archivo) is SIL OFL, so unlike Adobe Fonts it can
+legally be self-hosted and redistributed here. It lives in `assets/local-fonts/archivo/` with
+its licence bundled, and is a variable font — three files cover weights 300–700, ~92 KB total.
+
+Archivo is a *substitute*, not the real typeface: it is a neo-grotesque of similar proportions
+and colour, but letterforms differ on close inspection. **For design review that depends on exact
+type, use localhost**, where the genuine Acumin Pro loads.
+
+To restore Acumin everywhere, add the deploy domain to the kit's allowed domains in Rachel's
+Adobe Fonts account, or deploy to a domain already licensed on it. No code change is needed —
+`acumin-pro` is first in the stack and takes over the moment it is permitted to load.
 
 ### Capture notes
 
