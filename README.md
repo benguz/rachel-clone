@@ -20,12 +20,15 @@ index.html                    /
 about/index.html              /about
 contact/index.html            /contact
 disclaimer-terms-privacy/     /disclaimer-terms-privacy
-cart/index.html               /cart
 custom-404/index.html         /custom-404
 assets/<host>/<path>          all third-party assets, by original host
 scripts/                      Squarespace site-bundle webpack chunks (110 files)
 universal/svg/                social-icon sprite
 ```
+
+The live site's `/cart` page was captured but has since been deleted from this repo as
+unwanted. The header still contains a hidden cart-icon link to `/cart` on each page; it
+renders at 0×0 and is unreachable by a user, but it is a dangling link if you go looking.
 
 Assets keep their original host and path under `assets/` so any file can be traced back to
 its source URL: `assets/images.squarespace-cdn.com/content/v1/…` came from
@@ -35,8 +38,8 @@ its source URL: `assets/images.squarespace-cdn.com/content/v1/…` came from
 
 Verified against the live site at capture time:
 
-- **Text**: visible text of all 6 pages diffs at ratio `1.0000` — identical.
-- **Assets**: 397 local references across the 6 pages, **0 missing**.
+- **Text**: visible text of every page diffs at ratio `1.0000` against live — identical.
+- **Assets**: every local asset reference resolves, **0 missing**.
 - **Rendering**: fonts (Typekit `acumin-pro` + self-hosted `RosieRegular`), the SVG section
   dividers, image-effect shaders, and the custom logo all render as on the live site.
 
@@ -58,14 +61,22 @@ largest rendition); static servers ignore the query, so every `?format=` variant
 
 - **Google Analytics removed.** The GTM/`gtag` tags were stripped so a local copy can't report
   hits to the live property. Nothing else was altered.
-- **Dynamic backends don't work.** The contact form, cart/checkout, and Squarespace's
-  `/api/census/*` analytics beacons POST to endpoints that don't exist here. They fail
-  harmlessly and locally — no data leaves the machine.
+- **The contact form renders but cannot submit.** It has no `action`; Squarespace's JS
+  intercepts the submit and POSTs to a **same-origin** `/api/…` path (form id
+  `5ec0b9fb1eba8512a9211113`). Against a static server that path doesn't exist, so submission
+  fails. Because the target is same-origin and all URLs were rewritten local, a submission here
+  goes to `localhost` and **cannot reach the real inbox** — no data leaves the machine. The same
+  applies to Squarespace's `/api/census/*` analytics beacons. Wiring the form to a real handler
+  is a rework decision.
 - **`basics.rachelwestlake.com` not captured** (out of scope). Links to it still point at the
   live subdomain, as do external links (LinkedIn, Instagram, pacboard.org).
 - **One asset missing**: `assets.squarespace.com/universal/images-v6/icons/icon-plus-16-dark.png`
   redirects to a host with a mismatched TLS certificate. It is referenced only from Squarespace's
   editor-dialog stylesheet, never from the visitor-facing site.
+- **One `og:image` left remote**: every page carries
+  `<meta property="og:image" content="https://rachelwestlake.com/s/cycadian-health-advocacy-og.jpg">`.
+  That URL returns **404 on the live site** — it is already broken upstream, so there was nothing
+  to copy. The tag was left as-is rather than inventing a replacement.
 
 ## Content ownership
 
