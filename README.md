@@ -13,6 +13,23 @@ python3 -m http.server 4321
 Then open <http://localhost:4321>. Any static server works — the layout mirrors the live URL
 structure, so `/about` resolves to `about/index.html` and every internal link works unchanged.
 
+**Use localhost for design review.** It is the only place the typography is correct (see the
+Adobe Fonts note below).
+
+## Deployed preview
+
+<https://benguz.github.io/rachel-clone/> — GitHub Pages, from `master` at the repo root.
+
+All paths are mount-point independent (relative in HTML and CSS), so the site works both at a
+domain root and under the `/rachel-clone/` project subpath. The one exception is webpack chunk
+loading, which cannot use relative paths; it reads an origin-absolute `templateScriptsRootUrl`
+pinned to `/rachel-clone/scripts/`. **If you rename the repo or move to a custom domain, update
+that value** in each page's `<head>` (see `tools/subpath_fix.py`).
+
+Every page carries `<meta name="robots" content="noindex,nofollow,noarchive">` so the clone
+cannot compete with the real rachelwestlake.com in search. The `canonical` tags still point at
+the live site, which reinforces this.
+
 ## Layout
 
 ```
@@ -40,8 +57,31 @@ Verified against the live site at capture time:
 
 - **Text**: visible text of every page diffs at ratio `1.0000` against live — identical.
 - **Assets**: every local asset reference resolves, **0 missing**.
-- **Rendering**: fonts (Typekit `acumin-pro` + self-hosted `RosieRegular`), the SVG section
-  dividers, image-effect shaders, and the custom logo all render as on the live site.
+- **Rendering**: the SVG section dividers, image-effect shaders, and the custom logo all render
+  as on the live site. Typography is accurate **on localhost only** — see the Adobe Fonts note
+  below for why the public deploy falls back to serif.
+
+### The one thing that is NOT self-contained: Adobe Fonts
+
+Headings use **`acumin-pro`, served by Adobe Fonts (Typekit)**. The kit loader JS is mirrored,
+but the actual font files never were — they are fetched from Adobe's CDN at runtime, and Adobe
+Fonts kits are **licensed per domain**.
+
+- On **localhost** it looks correct: Adobe permits `localhost` by default.
+- On **`benguz.github.io`** the kit refuses to serve, and every heading silently falls back to
+  the default serif. The page still renders; the typography is simply wrong.
+
+Beware that `document.fonts.check('700 40px acumin-pro')` returns `true` even when this is
+happening — it only confirms a matching `@font-face` rule exists, not that the file loaded. To
+actually detect it, measure text width in `acumin-pro` and compare against `serif`; if they are
+equal, the font did not load.
+
+The fonts are **deliberately not self-hosted** — extracting Adobe Fonts files and serving them
+from a public repo would violate the licence. Real fixes, in order of preference:
+
+1. Add the deploy domain to the kit's allowed domains in Rachel's Adobe Fonts account.
+2. Deploy to a custom domain already licensed on the kit.
+3. Accept the serif fallback on the public preview (localhost stays accurate).
 
 ### Capture notes
 
