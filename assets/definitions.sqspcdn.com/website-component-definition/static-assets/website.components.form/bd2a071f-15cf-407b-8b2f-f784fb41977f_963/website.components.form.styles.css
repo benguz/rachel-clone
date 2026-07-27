@@ -1,6 +1,6 @@
 .sqs-block[data-definition-name="website.components.form"] .field-error {
   border-radius: 2px;
-  background: #CC3B3B url('/assets/assets.squarespace.com/universal/images-v6/standard/icon_close_7_light.png') no-repeat 9px 50%;
+  background: #CC3B3B url(../../../../../assets.squarespace.com/universal/images-v6/standard/icon_close_7_light.png) no-repeat 9px 50%;
   color: #fff;
   display: inline-block;
   font-size: 13px;
