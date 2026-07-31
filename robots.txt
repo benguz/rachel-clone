@@ -1,9 +1,4 @@
 User-agent: *
-Disallow: /
+Allow: /
 
-# This is a working mirror of rachelwestlake.com for a rework, not the real site.
-# Note: for a GitHub Pages *project* site, crawlers read the robots.txt at the
-# domain root (benguz.github.io/robots.txt), not this one. The per-page
-# <meta name="robots" content="noindex,nofollow"> is what actually keeps this
-# out of search results. This file matters only if the site later moves to a
-# custom domain, where it becomes the effective robots.txt.
+Sitemap: https://www.rachelwestlake.com/sitemap.xml
